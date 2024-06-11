@@ -1,6 +1,40 @@
 ---
-title: "ST 503 Project 1"
+title: "ST 558 Project 1"
 format: html
 editor: visual
 ---
+## Data Processing
+
+```{r}
+# Install packages
+install.packages("tidyverse")
+install.packages("DBI")
+#install.packages("RSQLite")
+```
+
+```{r}
+# Load packages
+library(tidyverse)
+library(readxl)
+library(dplyr)
+library(readr)
+library(DBI)
+#library(RSQLite)
+```
+
+```{r}
+# Read in the data
+data1 <- "https://www4.stat.ncsu.edu/~online/datasets/
+EDU01a.csv"
+```
+
+```{r}
+# Only select the columns identified in the instructional document
+#selected_data1 <- data1 %>%
+  #select(Area_name, STCOU, ends_with("D")) %>%
+  #rename(area_name = Area_name)
+```
+
+
+
 
