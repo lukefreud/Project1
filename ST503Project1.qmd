@@ -71,8 +71,14 @@ county_tibble <- long_data1[county_indices, ]
 
 # Add a class to the tibble called 'county'
 class(county_tibble) <- c("county", class(county_tibble))
+
 ```
 
+#### 5. Create a new variable to describe the corresponding state in the county tibble
+```{r}
+county_tibble |>
+  mutate(State = substr(area_name, start = nchar(area_name)-1, stop = nchar(area_name)))
+```
 
 
 ## Functions
