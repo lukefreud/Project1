@@ -15,7 +15,7 @@ library(DBI)
 
 ```{r}
 # Read in the data
-data1 <- read_csv("EDU01a.csv")
+data1 <- read_csv("https://www4.stat.ncsu.edu/~online/datasets/EDU01a.csv")
 ```
 
 #### 1. Only select the columns identified in the instructional document
@@ -42,7 +42,7 @@ long_data1 |>
   # Extract the year from the 'Survey' column, covert to a number, and create a new 'Year' variable with these values
   mutate(Year = as.numeric(substr(Survey, start = 8, stop = 9))) |>
   
-  # Covert the two digit year into a four digit year and overwrite the 'Year' column
+  # Convert the two digit year into a four digit year and overwrite the 'Year' column
   mutate(Year = ifelse(Year > 24, Year + 1900, Year + 2000)) |>
   
   # Extract the first 7 digits from the 'Survey' column and create a new 'Measurement' variable with these values
@@ -113,7 +113,7 @@ long_format_conversion <- function(df, value = "Enrollment Value") {
 
 ```{r}
 # Function one test
-data2 <- read_csv("EDU01B.csv")
+data2 <- read_csv("https://www4.stat.ncsu.edu/~online/datasets/EDU01b.csv")
 long_data2 <- long_format_conversion(data2)
 long_data2
 ```
@@ -138,6 +138,72 @@ survey_function <- function(long_df) {
 # Function two test
 survey_function(long_data2)
 ```
+
+#### 3. Function for Creating State Variable
+```{r}
+state_function <- function(county_tibble){
+  county_tibble |>
+  mutate(State = substr(area_name, start = nchar(area_name)-1, stop = nchar(area_name)))
+}
+```
+
+```{r}
+# Function 3 Test
+state_function(county_tibble)
+```
+
+#### 4. Function for creating the division variable of the state
+```{r}
+division_function <- function(noncounty_tibble) {
+  noncounty_tibble |>
+  mutate(Division = ifelse(area_name %in% c("CONNECTICUT", "MAINE", "MASSACHUSETTS", "NEW HAMPSHIRE", "RHODE ISLAND", "VERMONT"), "Division 1",
+                           ifelse(area_name %in% c("NEW JERSEY", "NEW YORK", "PENNSYLVANIA"), "Division 2",
+                                  ifelse(area_name %in% c("ILLINOIS", "INDIANA", "MICHIGAN", "OHIO", "WISCONSIN"), "Division 3",
+                                         ifelse(area_name %in% c("IOWA", "KANSAS", "MINNESOTA", "MISSOURI", "NEBRASKA", "NORTH DAKOTA", "SOUTH DAKOTA"), "Division 4",
+                                                ifelse(area_name %in% c("DELAWARE", "FLORIDA", "GEORGIA", "MARYLAND", "NORTH CAROLINA", "SOUTH CAROLINA", "VIRGINIA", "DISTRICT OF COLUMBIA", "District of Columbia", "WEST VIRGINIA"), "Division 5",
+                                                       ifelse(area_name %in% c("ALABAMA", "KENTUCKY", "MISSISSIPPI", "TENNESSEE"), "Division 6",
+                                                              ifelse(area_name %in% c("ARKANSAS", "LOUISIANA", "OKLAHOMA", "TEXAS"), "Division 7",
+                                                                     ifelse(area_name %in% c("ARIZONA", "COLORADO", "IDAHO", "MONTANA", "NEVADA", "NEW MEXICO", "UTAH", "WYOMING"), "Division 8",
+                                                                            ifelse(area_name %in% c("ALASKA", "CALIFORNIA", "HAWAII", "OREGON", "WASHINGTON"), "Division 9", "ERROR"))))))))))
+}
+```
+
+```{r}
+division_function(noncounty_tibble)
+```
+
+#### 5. Function for creating two datasets from one and adding division/state variables
+
+```{r}
+create_datasets <- function(long_data) {
+  county_indices <- grep(pattern = ", \\w\\w", long_data1$area_name)
+  noncounty_tibble <- long_data1[-county_indices, ]
+  class(noncounty_tibble) <- c("state", class(noncounty_tibble))
+  county_tibble <- long_data1[county_indices, ]
+  class(county_tibble) <- c("county", class(county_tibble))
+  final_county_tibble <- state_function(county_tibble)
+  final_noncounty_tibble <- division_function(noncounty_tibble)
+  return(list(county = final_county_tibble, noncounty = final_noncounty_tibble))
+}
+```
+
+```{r}
+create_datasets(long_data2)
+```
+
+#### Wrapper Function - Still Working on This
+
+```{r}
+my_wrapper <- function(url, var_name = "Enrollment Value"){
+result <- read_csv(url) |>
+long_format_conversion(url, var_name) |>
+state_function() |>
+create_datasets()
+#return final result
+}
+
+```
+
 
 
 
