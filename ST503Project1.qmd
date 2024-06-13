@@ -6,19 +6,12 @@ editor: visual
 
 ## Data Processing
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 75e6851c43b02ca371251c59463f4592f8efdd6f
 ```{r}
 # Load packages
 library(readxl)
-<<<<<<< HEAD
 library(dplyr)
 library(readr)
 library(tidyr)
-=======
->>>>>>> 75e6851c43b02ca371251c59463f4592f8efdd6f
 library(DBI)
 ```
 
@@ -30,7 +23,6 @@ data1 <- read_csv("EDU01a.csv")
 #### 1. Only select the columns identified in the instructional document
 
 ```{r}
-<<<<<<< HEAD
 # Name the data frame
 selected_data1 <- data1 %>%
 
@@ -43,15 +35,46 @@ selected_data1 <- data1 %>%
 
 #### 2. Convert the data into long format
 ```{r}
-long_data1 <- pivot_longer(selected_data1, cols = ends_with("D"), names_to = "Enrollment", values_to = "Value")
-=======
-# Only select the columns identified in the instructional document
-selected_data1 <- data1 %>%
-  select(Area_name, STCOU, ends_with("D")) %>%
-  rename(area_name = Area_name)
->>>>>>> 75e6851c43b02ca371251c59463f4592f8efdd6f
+long_data1 <- pivot_longer(selected_data1, cols = ends_with("D"), names_to = "Survey", values_to = "Enrollment Value")
 ```
 
+#### 3. Survey values
+```{r}
+# Establish year_vals3
+year_vals3 <- numeric(length(4))
 
+# Loop through each string in the 'Survey' column
+for (i in 1:nrow(long_data1)) {
+  
+  # Extract the year from the string survey value
+  year_vals[i] <- substr(long_data1$Survey[i], start = 8, stop = 9)
+  
+  # Convert the year into a numeric value
+  year_vals2[i] <- as.numeric(year_vals[i])
+  
+  # Turn the two digit year into a four digit year
+  if (year_vals2[i] >= 25) {
+    year_vals3[i] <- 1900 + year_vals2[i]
+  } else {
+    year_vals3[i] <- (2000 + year_vals2[i])
+  }
+}
+
+# Create a new column representing the year of the survey
+yr_data1 <- long_data1 %>%
+  mutate(Year = year_vals3)
+
+
+# Loop through each string in the 'Survey' column
+for (i in 1:nrow(long_data1)) {
+  
+  # Extract the first three characters and the following four digits
+  survey_vals <- substr(long_data1$Survey[i], start = 1, stop = 7)
+}
+
+# Create a new column representing which measurement was grabbed
+new_data1 <- yr_data1 %>%
+  mutate(Measurement = survey_vals)
+```
 
 
