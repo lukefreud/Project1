@@ -3,36 +3,39 @@ title: "ST 558 Project 1"
 format: html
 editor: visual
 ---
+
 ## Data Processing
 
 ```{r}
-# Install packages
-install.packages("tidyverse")
-install.packages("DBI")
-#install.packages("RSQLite")
-```
-
-```{r}
 # Load packages
-library(tidyverse)
 library(readxl)
 library(dplyr)
 library(readr)
+library(tidyr)
 library(DBI)
-#library(RSQLite)
 ```
 
 ```{r}
 # Read in the data
-data1 <- "https://www4.stat.ncsu.edu/~online/datasets/
-EDU01a.csv"
+data1 <- read_csv("EDU01a.csv")
 ```
 
+#### 1. Only select the columns identified in the instructional document
+
 ```{r}
-# Only select the columns identified in the instructional document
-#selected_data1 <- data1 %>%
-  #select(Area_name, STCOU, ends_with("D")) %>%
-  #rename(area_name = Area_name)
+# Name the data frame
+selected_data1 <- data1 %>%
+
+# Select the respective columns
+  select(Area_name, STCOU, ends_with("D")) %>%
+
+# Rename the Area_name variable
+  rename(area_name = Area_name)
+```
+
+#### 2. Convert the data into long format
+```{r}
+long_data1 <- pivot_longer(selected_data1, cols = ends_with("D"), names_to = "Enrollment", values_to = "Value")
 ```
 
 
