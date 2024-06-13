@@ -19,40 +19,39 @@ data1 <- read_csv("EDU01a.csv")
 ```
 
 #### 1. Only select the columns identified in the instructional document
-
 ```{r}
 # Name the data frame
-selected_data1 <- data1 %>%
+selected_data1 <- data1 |>
 
 # Select the respective columns
-  select(Area_name, STCOU, ends_with("D")) %>%
+  select(Area_name, STCOU, ends_with("D")) |>
 
 # Rename the Area_name variable
   rename(area_name = Area_name)
 ```
 
 #### 2. Convert the data into long format
-
 ```{r}
 long_data1 <- pivot_longer(selected_data1, cols = ends_with("D"), names_to = "Survey", values_to = "Enrollment Value")
 ```
 
 #### 3. Survey values
-
 ```{r}
 long_data1 |>
-  # Creating Year variable that gets the year values from the Survey string
+  
+  # Extract the year from the 'Survey' column, covert to a number, and create a new 'Year' variable with these values
   mutate(Year = as.numeric(substr(Survey, start = 8, stop = 9))) |>
-  # Adding the 1900 or 2000 to the yearvals variable to get the actual year and overwriting that variable
-  mutate(Year = ifelse(Year > 25, Year + 1900, Year + 2000)) |>
-  # Creating variable for the first 3 characters and 4 digits of the Survey string
+  
+  # Covert the two digit year into a four digit year and overwrite the 'Year' column
+  mutate(Year = ifelse(Year > 24, Year + 1900, Year + 2000)) |>
+  
+  # Extract the first 7 digits from the 'Survey' column and create a new 'Measurement' variable with these values
   mutate(Measurement = substr(Survey, start = 1, stop = 7))
 ```
 
 ## Functions
 
-#### Function to select necessary columns and convert the data into long format
-
+#### 1. Function to select necessary columns and convert the data into long format
 ```{r}
 Long_Format_Conversion <- function(df, value = "Enrollment Value") {
   selected_data <- df %>%
@@ -63,37 +62,37 @@ Long_Format_Conversion <- function(df, value = "Enrollment Value") {
 # Rename the Area_name variable
   rename(area_name = Area_name)
   
-# Converting data to the long format
+# Convert the data into long format
   long_data <- pivot_longer(selected_data, cols = ends_with("D"), names_to = "Survey", values_to = value)
   return(long_data1)
 }
 ```
 
-#### Testing this function
-
 ```{r}
+# Function one test
 data2 <- read_csv("EDU01B.csv")
 long_data2 <- Long_Format_Conversion(data2)
 long_data2
 ```
 
-#### Function for pulling out year and measurement from the survey values
-
+#### 2. Function for pulling out year and measurement from the survey values
 ```{r}
 Survey_Function <- function(long_df) {
   long_df |>
-  # Creating Year variable that gets the year values from the Survey string
+    
+  # Extract the year from the 'Survey' column, covert to a number, and create a new 'Year' variable with these values
   mutate(Year = as.numeric(substr(Survey, start = 8, stop = 9))) |>
-  # Adding the 1900 or 2000 to the yearvals variable to get the actual year and overwriting that variable
+    
+  # Covert the two digit year into a four digit year and overwrite the 'Year' column
   mutate(Year = ifelse(Year > 25, Year + 1900, Year + 2000)) |>
-  # Creating variable for the first 3 characters and 4 digits of the Survey string
+    
+  # Extract the first 7 digits from the 'Survey' column and create a new 'Measurement' variable with these values
   mutate(Measurement = substr(Survey, start = 1, stop = 7))
 }
 ```
 
-#### Testing this Function
-
 ```{r}
+# Function two test
 Survey_Function(long_data2)
 ```
 
