@@ -6,12 +6,19 @@ editor: visual
 
 ## Data Processing
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 75e6851c43b02ca371251c59463f4592f8efdd6f
 ```{r}
 # Load packages
 library(readxl)
+<<<<<<< HEAD
 library(dplyr)
 library(readr)
 library(tidyr)
+=======
+>>>>>>> 75e6851c43b02ca371251c59463f4592f8efdd6f
 library(DBI)
 ```
 
@@ -23,6 +30,7 @@ data1 <- read_csv("EDU01a.csv")
 #### 1. Only select the columns identified in the instructional document
 
 ```{r}
+<<<<<<< HEAD
 # Name the data frame
 selected_data1 <- data1 %>%
 
@@ -36,6 +44,12 @@ selected_data1 <- data1 %>%
 #### 2. Convert the data into long format
 ```{r}
 long_data1 <- pivot_longer(selected_data1, cols = ends_with("D"), names_to = "Enrollment", values_to = "Value")
+=======
+# Only select the columns identified in the instructional document
+selected_data1 <- data1 %>%
+  select(Area_name, STCOU, ends_with("D")) %>%
+  rename(area_name = Area_name)
+>>>>>>> 75e6851c43b02ca371251c59463f4592f8efdd6f
 ```
 
 
