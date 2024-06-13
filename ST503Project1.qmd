@@ -61,7 +61,6 @@ noncounty_tibble <- long_data1[-county_indices, ]
 
 # Add a class to the tibble called 'state'
 class(noncounty_tibble) <- c("state", class(noncounty_tibble))
-
 ```
 
 **Data set that contains only county level data**
@@ -71,7 +70,6 @@ county_tibble <- long_data1[county_indices, ]
 
 # Add a class to the tibble called 'county'
 class(county_tibble) <- c("county", class(county_tibble))
-
 ```
 
 #### 5. Create a new variable to describe the corresponding state in the county tibble
@@ -80,6 +78,19 @@ county_tibble |>
   mutate(State = substr(area_name, start = nchar(area_name)-1, stop = nchar(area_name)))
 ```
 
+#### 6. Create a new 'division' variable for the non-county tibble
+```{r}
+noncounty_tibble |>
+  mutate(Division = ifelse(area_name %in% c("CONNECTICUT", "MAINE", "MASSACHUSETTS", "NEW HAMPSHIRE", "RHODE ISLAND", "VERMONT"), "Division 1",
+                           ifelse(area_name %in% c("NEW JERSEY", "NEW YORK", "PENNSYLVANIA"), "Division 2",
+                                  ifelse(area_name %in% c("ILLINOIS", "INDIANA", "MICHIGAN", "OHIO", "WISCONSIN"), "Division 3",
+                                         ifelse(area_name %in% c("IOWA", "KANSAS", "MINNESOTA", "MISSOURI", "NEBRASKA", "NORTH DAKOTA", "SOUTH DAKOTA"), "Division 4",
+                                                ifelse(area_name %in% c("DELAWARE", "FLORIDA", "GEORGIA", "MARYLAND", "NORTH CAROLINA", "SOUTH CAROLINA", "VIRGINIA", "DISTRICT OF COLUMBIA", "District of Columbia", "WEST VIRGINIA"), "Division 5",
+                                                       ifelse(area_name %in% c("ALABAMA", "KENTUCKY", "MISSISSIPPI", "TENNESSEE"), "Division 6",
+                                                              ifelse(area_name %in% c("ARKANSAS", "LOUISIANA", "OKLAHOMA", "TEXAS"), "Division 7",
+                                                                     ifelse(area_name %in% c("ARIZONA", "COLORADO", "IDAHO", "MONTANA", "NEVADA", "NEW MEXICO", "UTAH", "WYOMING"), "Division 8",
+                                                                            ifelse(area_name %in% c("ALASKA", "CALIFORNIA", "HAWAII", "OREGON", "WASHINGTON"), "Division 9", "ERROR"))))))))))
+```
 
 ## Functions
 
