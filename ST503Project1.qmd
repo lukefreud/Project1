@@ -49,35 +49,61 @@ long_data1 |>
   mutate(Measurement = substr(Survey, start = 1, stop = 7))
 ```
 
+#### 4. Create two data sets
+
+**Data set that contains only non-county data**
+```{r}
+# Identify the indices corresponding to states
+county_indices <- grep(pattern = ", \\w\\w", long_data1$area_name)
+
+# Create the county data set with only non-county level data
+noncounty_tibble <- long_data1[-county_indices, ]
+
+# Add a class to the tibble called 'state'
+class(noncounty_tibble) <- c("state", class(noncounty_tibble))
+
+```
+
+**Data set that contains only county level data**
+```{r}
+# Create the county data set with only county level data
+county_tibble <- long_data1[county_indices, ]
+
+# Add a class to the tibble called 'county'
+class(county_tibble) <- c("county", class(county_tibble))
+```
+
+
+
 ## Functions
 
 #### 1. Function to select necessary columns and convert the data into long format
 ```{r}
-Long_Format_Conversion <- function(df, value = "Enrollment Value") {
-  selected_data <- df %>%
+long_format_conversion <- function(df, value = "Enrollment Value") {
+  selected_data <- df |>
 
 # Select the respective columns
-  select(Area_name, STCOU, ends_with("D")) %>%
+  select(Area_name, STCOU, ends_with("D")) |>
 
 # Rename the Area_name variable
   rename(area_name = Area_name)
   
 # Convert the data into long format
   long_data <- pivot_longer(selected_data, cols = ends_with("D"), names_to = "Survey", values_to = value)
-  return(long_data1)
+  return(long_data)
 }
 ```
 
 ```{r}
 # Function one test
 data2 <- read_csv("EDU01B.csv")
-long_data2 <- Long_Format_Conversion(data2)
+long_data2 <- long_format_conversion(data2)
 long_data2
 ```
 
 #### 2. Function for pulling out year and measurement from the survey values
 ```{r}
-Survey_Function <- function(long_df) {
+survey_function <- function(long_df) {
   long_df |>
     
   # Extract the year from the 'Survey' column, covert to a number, and create a new 'Year' variable with these values
@@ -93,7 +119,7 @@ Survey_Function <- function(long_df) {
 
 ```{r}
 # Function two test
-Survey_Function(long_data2)
+survey_function(long_data2)
 ```
 
 
