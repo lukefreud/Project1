@@ -113,9 +113,9 @@ long_format_conversion <- function(df, value = "Enrollment Value") {
 
 ```{r}
 # Function one test
-data2 <- read_csv("https://www4.stat.ncsu.edu/~online/datasets/EDU01b.csv")
-long_data2 <- long_format_conversion(data2)
-long_data2
+#data2 <- read_csv("https://www4.stat.ncsu.edu/~online/datasets/EDU01b.csv")
+#long_data2 <- long_format_conversion(data2)
+#long_data2
 ```
 
 #### 2. Function for pulling out year and measurement from the survey values
@@ -131,12 +131,14 @@ survey_function <- function(long_df) {
     
   # Extract the first 7 digits from the 'Survey' column and create a new 'Measurement' variable with these values
   mutate(Measurement = substr(Survey, start = 1, stop = 7))
+  
+  return(long_df)
 }
 ```
 
 ```{r}
 # Function two test
-survey_function(long_data2)
+#survey_function(long_data2)
 ```
 
 #### 3. Function for Creating State Variable
@@ -144,12 +146,13 @@ survey_function(long_data2)
 state_function <- function(county_tibble){
   county_tibble |>
   mutate(State = substr(area_name, start = nchar(area_name)-1, stop = nchar(area_name)))
+  return(county_tibble)
 }
 ```
 
 ```{r}
 # Function 3 Test
-state_function(county_tibble)
+#state_function(county_tibble)
 ```
 
 #### 4. Function for creating the division variable of the state
@@ -165,11 +168,12 @@ division_function <- function(noncounty_tibble) {
                                                               ifelse(area_name %in% c("ARKANSAS", "LOUISIANA", "OKLAHOMA", "TEXAS"), "Division 7",
                                                                      ifelse(area_name %in% c("ARIZONA", "COLORADO", "IDAHO", "MONTANA", "NEVADA", "NEW MEXICO", "UTAH", "WYOMING"), "Division 8",
                                                                             ifelse(area_name %in% c("ALASKA", "CALIFORNIA", "HAWAII", "OREGON", "WASHINGTON"), "Division 9", "ERROR"))))))))))
+return(noncounty_tibble)
 }
 ```
 
 ```{r}
-division_function(noncounty_tibble)
+#division_function(noncounty_tibble)
 ```
 
 #### 5. Function for creating two datasets from one and adding division/state variables
@@ -188,21 +192,46 @@ create_datasets <- function(long_data) {
 ```
 
 ```{r}
-create_datasets(long_data2)
+#create_datasets(long_data2)
 ```
 
-#### Wrapper Function - Still Working on This
+#### Wrapper Function
 
 ```{r}
-my_wrapper <- function(url, var_name = "Enrollment Value"){
+my_wrapper <- function(url, value = "Enrollment Value"){
 result <- read_csv(url) |>
-long_format_conversion(url, var_name) |>
+long_format_conversion(value = value) |>
 state_function() |>
 create_datasets()
-#return final result
+return(result)
 }
-
 ```
+
+#### Calling the Wrapper Function on Each URL
+
+```{r}
+tibble1 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/EDU01a.csv")
+tibble2 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/EDU01b.csv")
+```
+
+#### Function to Combine Datasets
+
+```{r}
+combine_tibbles <- function (tibble1, tibble2){
+  county_tibble <- bind_rows(tibble1[[1]], tibble2[[1]])
+  noncounty_tibble <- bind_rows(tibble1[[2]], tibble2[[2]])
+  return(list(county_tibble, noncounty_tibble))
+}
+```
+
+#### Calling Combine Function on our Tibbles
+
+```{r}
+combine_tibbles(tibble1, tibble2)
+```
+
+
+
 
 
 
