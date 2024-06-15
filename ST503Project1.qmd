@@ -235,11 +235,27 @@ plot.state <- function(df, value = "Enrollment Value") {
   df |>
     summarize(mean_division = mean())
 }
+
+# plot.state <- function(df, var_name = "Enrollment Value") {
+
+# Filter observations where division is currently "ERROR"
+# df <- df |>
+# filter(Division != "ERROR")
+
+# Calculate mean enrollment value for each division and year
+# mean_vals <- df|>
+# group_by(Division, Year)|>
+# summarize(mean_val = mean(get(var_name)))
+
+# Plot
+#plot(mean_vals, aes(x = Year, y = mean_val, group = Division, color = Division)) + geom_line() + labs(x = "Year", y = "Mean Enrollment Value", title = "Main Enrollment Value Across the Years for Each Division")
+
+#}
 ```
 
 #### Test the plot state function
 ```{r}
-# plot(_class_state_df_here_, var_name = ...)
+# plot(_class_state_df_here_, var_name = "Enrollment Value")
 ```
 
 #### Write the plot county function
@@ -249,7 +265,7 @@ plot.state <- function(df, value = "Enrollment Value") {
 
 #### Test the plot county function
 ```{r}
-# plot(_class_state_df_here_, var_name = ...)
+# plot(_class_state_df_here_, var_name = "Enrollment Value")
 ```
 
 ## Put It All Together
