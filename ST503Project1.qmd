@@ -93,7 +93,7 @@ noncounty_tibble |>
                                                                             ifelse(area_name %in% c("ALASKA", "CALIFORNIA", "HAWAII", "OREGON", "WASHINGTON"), "Division 9", "ERROR"))))))))))
 ```
 
-## Functions
+## Function Creation
 
 #### 1. Function to select necessary columns and convert the data into long format (Steps 1 and 2)
 ```{r}
@@ -177,7 +177,6 @@ division_function <- function(noncounty_tibble) {
 ```
 
 #### 5. Function for creating two datasets from one and adding division/state variables (Steps 4-6)
-
 ```{r}
 create_datasets <- function(long_data) {
   county_indices <- grep(pattern = ", \\w\\w", long_data$area_name)
@@ -195,8 +194,9 @@ create_datasets <- function(long_data) {
 create_datasets(long_data_updated)
 ```
 
-#### Wrapper Function
+## Call It and Combine Your Data
 
+#### Create a wrapper function
 ```{r}
 my_wrapper <- function(url, value = "Enrollment Value"){
 result <- read_csv(url) |>
@@ -207,15 +207,13 @@ return(result)
 }
 ```
 
-#### Calling the Wrapper Function on Each URL
-
+#### Call the wrapper function on each URL
 ```{r}
 tibble1 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/EDU01a.csv")
 tibble2 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/EDU01b.csv")
 ```
 
-#### Function to Combine Datasets
-
+#### Write a function to combine data sets
 ```{r}
 combine_tibbles <- function (tibble1, tibble2){
   county_df <- as.data.frame(bind_rows(tibble1[[1]], tibble2[[1]]))
@@ -224,14 +222,14 @@ combine_tibbles <- function (tibble1, tibble2){
 }
 ```
 
-#### Calling Combine Function on our Tibbles
-
+#### Call the combine function on the tibbles
 ```{r}
 combine_tibbles(tibble1, tibble2)
 ```
 
-#### Plot State Function
+## Writing a Generic Function for Summarizing
 
+#### Write the plot state function
 ```{r}
 plot.state <- function(df, value = "Enrollment Value") {
   df |>
@@ -239,16 +237,76 @@ plot.state <- function(df, value = "Enrollment Value") {
 }
 ```
 
+#### Test the plot state function
+```{r}
+# plot(_class_state_df_here_, var_name = ...)
+```
+
+#### Write the plot county function
+```{r}
+
+```
+
+#### Test the plot county function
+```{r}
+# plot(_class_state_df_here_, var_name = ...)
+```
+
+## Put It All Together
+
+#### Run the data processing function on the 2 enrollment URLs
+```{r}
+
+```
+
+#### Run the data combining function to make one object
+```{r}
+
+```
+
+#### Use the plot function on the state data frame
+```{r}
+
+```
+
+#### Use the plot function on the county data frame
+```{r}
+# Specify the state to "NC", the group to top, and the number to 20
+
+# Specify the state to "SC", the group to bottom, and the number to 7
+
+# Do not specify anything
+
+# Specify the state to "PA", the group to top, and the number to 8
+
+```
+
+#### Read in similar data sets and apply the functions
+
+**Run the data processing function**
+```{r}
 
 
+```
 
+**Run the data combining function to put these data sets into one object**
+```{r}
 
+```
 
+**Use the plot function on the state data frame**
+```{r}
 
+```
 
+**Use the plot function on the county data frame**
+```{r}
+# Specify the state to "CA", the group to top, and the number to 15
 
+# Specify the state to "TX", the group to top, and the number to 4
 
+# Do not specify anything
 
+# Specify the state to "NY", the group to top, and the number to 10
 
-
-
+```
