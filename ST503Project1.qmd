@@ -19,6 +19,7 @@ data1 <- read_csv("https://www4.stat.ncsu.edu/~online/datasets/EDU01a.csv")
 ```
 
 #### 1. Only select the columns identified in the instructional document
+
 ```{r}
 # Name the data frame
 selected_data1 <- data1 |>
@@ -31,11 +32,13 @@ selected_data1 <- data1 |>
 ```
 
 #### 2. Convert the data into long format
+
 ```{r}
 long_data1 <- pivot_longer(selected_data1, cols = ends_with("D"), names_to = "Survey", values_to = "Enrollment Value")
 ```
 
 #### 3. Survey values
+
 ```{r}
 long_data1_updated <- long_data1 |>
   
@@ -53,6 +56,7 @@ long_data1_updated
 #### 4. Create two data sets
 
 **Data set that contains only non-county data**
+
 ```{r}
 # Identify the indices corresponding to states
 county_indices <- grep(pattern = ", \\w\\w", long_data1_updated$area_name)
@@ -65,6 +69,7 @@ class(noncounty_tibble) <- c("state", class(noncounty_tibble))
 ```
 
 **Data set that contains only county level data**
+
 ```{r}
 # Create the county data set with only county level data
 county_tibble <- long_data1_updated[county_indices, ]
@@ -74,12 +79,14 @@ class(county_tibble) <- c("county", class(county_tibble))
 ```
 
 #### 5. Create a new variable to describe the corresponding state in the county tibble
+
 ```{r}
 county_tibble |>
   mutate(State = substr(area_name, start = nchar(area_name)-1, stop = nchar(area_name)))
 ```
 
 #### 6. Create a new 'division' variable for the non-county tibble
+
 ```{r}
 noncounty_tibble |>
   mutate(Division = ifelse(area_name %in% c("CONNECTICUT", "MAINE", "MASSACHUSETTS", "NEW HAMPSHIRE", "RHODE ISLAND", "VERMONT"), "Division 1",
@@ -96,6 +103,7 @@ noncounty_tibble |>
 ## Function Creation
 
 #### 1. Function to select necessary columns and convert the data into long format (Steps 1 and 2)
+
 ```{r}
 long_format_conversion <- function(df, value = "Enrollment Value") {
   selected_data <- df |>
@@ -120,6 +128,7 @@ long_data2
 ```
 
 #### 2. Function for pulling out year and measurement from the survey values (Step 3)
+
 ```{r}
 survey_function <- function(long_data) {
   long_data_updated <- long_data |>
@@ -142,6 +151,7 @@ long_data_updated <- survey_function(long_data2)
 ```
 
 #### 3. Function for Creating State Variable (Step 5)
+
 ```{r}
 state_function <- function(county_tibble){
   new_county_tibble <- county_tibble |>
@@ -156,6 +166,7 @@ state_function <- function(county_tibble){
 ```
 
 #### 4. Function for creating the division variable of the state (Step 6)
+
 ```{r}
 division_function <- function(noncounty_tibble) {
   noncounty_tibble_updated <- noncounty_tibble |>
@@ -177,6 +188,7 @@ division_function <- function(noncounty_tibble) {
 ```
 
 #### 5. Function for creating two datasets from one and adding division/state variables (Steps 4-6)
+
 ```{r}
 create_datasets <- function(long_data) {
   county_indices <- grep(pattern = ", \\w\\w", long_data$area_name)
@@ -197,6 +209,7 @@ create_datasets(long_data_updated)
 ## Call It and Combine Your Data
 
 #### Create a wrapper function
+
 ```{r}
 my_wrapper <- function(url, value = "Enrollment Value"){
 result <- read_csv(url) |>
@@ -208,12 +221,14 @@ return(result)
 ```
 
 #### Call the wrapper function on each URL
+
 ```{r}
 tibble1 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/EDU01a.csv")
 tibble2 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/EDU01b.csv")
 ```
 
 #### Write a function to combine data sets
+
 ```{r}
 combine_tibbles <- function (tibble1, tibble2){
   county_df <- as.data.frame(bind_rows(tibble1[[1]], tibble2[[1]]))
@@ -223,19 +238,25 @@ combine_tibbles <- function (tibble1, tibble2){
 ```
 
 #### Call the combine function on the tibbles
+
 ```{r}
-combine_tibbles(tibble1, tibble2)
+df <- combine_tibbles(tibble1, tibble2)
 ```
 
 ## Writing a Generic Function for Summarizing
 
 #### Write the plot state function
+
 ```{r}
 plot.state <- function(df, value = "Enrollment Value") {
-  df |>
-    summarize(mean_division = mean())
+   updated_df <- df |>
+    filter(Division != "ERROR") |>
+    group_by(Division, Year) |>
+    summarize(mean_stat = mean(get(value)))
+  g <- ggplot(updated_df, aes(x = Year, y = mean_stat, color = Division)) 
+    g + geom_line()
 }
-
+plot.state(df[[2]])
 # plot.state <- function(df, var_name = "Enrollment Value") {
 
 # Filter observations where division is currently "ERROR"
@@ -254,16 +275,19 @@ plot.state <- function(df, value = "Enrollment Value") {
 ```
 
 #### Test the plot state function
+
 ```{r}
 # plot(_class_state_df_here_, var_name = "Enrollment Value")
 ```
 
 #### Write the plot county function
+
 ```{r}
 
 ```
 
 #### Test the plot county function
+
 ```{r}
 # plot(_class_state_df_here_, var_name = "Enrollment Value")
 ```
@@ -271,21 +295,25 @@ plot.state <- function(df, value = "Enrollment Value") {
 ## Put It All Together
 
 #### Run the data processing function on the 2 enrollment URLs
+
 ```{r}
 
 ```
 
 #### Run the data combining function to make one object
+
 ```{r}
 
 ```
 
 #### Use the plot function on the state data frame
+
 ```{r}
 
 ```
 
 #### Use the plot function on the county data frame
+
 ```{r}
 # Specify the state to "NC", the group to top, and the number to 20
 
@@ -300,22 +328,26 @@ plot.state <- function(df, value = "Enrollment Value") {
 #### Read in similar data sets and apply the functions
 
 **Run the data processing function**
+
 ```{r}
 
 
 ```
 
 **Run the data combining function to put these data sets into one object**
+
 ```{r}
 
 ```
 
 **Use the plot function on the state data frame**
+
 ```{r}
 
 ```
 
 **Use the plot function on the county data frame**
+
 ```{r}
 # Specify the state to "CA", the group to top, and the number to 15
 
