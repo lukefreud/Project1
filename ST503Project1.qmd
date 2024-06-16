@@ -298,10 +298,10 @@ plot.county(df[[1]])
 
 ```{r}
 # Run the function on enrollment URL 1
-enroll1 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/EDU01a.csv")
+enroll1 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/EDU01a.csv", value = "Enrollment_Data_1")
 
 # Run the function on enrollment URL 2
-enroll2 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/EDU01b.csv")
+enroll2 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/EDU01b.csv", value = "Enrollment_Data_2")
 ```
 
 #### Run the data combining function to make one object
@@ -313,23 +313,23 @@ enroll_combo <- combine_tibbles(enroll1, enroll2)
 #### Use the plot function on the state data frame
 
 ```{r}
-#plot.state(noncounty_tibble, "Enrollment Value")
+plot.state(df[[2]])
 ```
 
 #### Use the plot function on the county data frame
 
 ```{r}
 # Specify the state to "NC", the group to top, and the number to 20
-#plot.county(df, state = "NC", order = "top", number = 20)
+plot.county(df[[1]], state = "NC", order = "top", number = 20)
 
 # Specify the state to "SC", the group to bottom, and the number to 7
-#plot.county(df, state = "SC", order = "bottom", number = 7)
+plot.county(df[[1]], state = "SC", order = "bottom", number = 7)
 
 # Do not specify anything
 plot.county(df[[1]])
 
 # Specify the state to "PA", the group to top, and the number to 8
-#plot.county(df, state = "PA", order = "top", number = 8)
+plot.county(df[[1]], state = "PA", order = "top", number = 8)
 
 ```
 
@@ -338,8 +338,13 @@ plot.county(df[[1]])
 **Run the data processing function**
 
 ```{r}
+url1 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/PST01a.csv")
 
+url2 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/PST01b.csv")
 
+url3 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/PST01c.csv")
+
+url4 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/PST01d.csv")
 ```
 
 **Run the data combining function to put these data sets into one object**
