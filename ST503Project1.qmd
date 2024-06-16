@@ -256,40 +256,40 @@ plot.state <- function(df, value = "Enrollment Value") {
   g <- ggplot(updated_df, aes(x = Year, y = mean_stat, color = Division)) 
     g + geom_line()
 }
-plot.state(df[[2]])
-# plot.state <- function(df, var_name = "Enrollment Value") {
-
-# Filter observations where division is currently "ERROR"
-# df <- df |>
-# filter(Division != "ERROR")
-
-# Calculate mean enrollment value for each division and year
-# mean_vals <- df|>
-# group_by(Division, Year)|>
-# summarize(mean_val = mean(get(var_name)))
-
-# Plot
-#plot(mean_vals, aes(x = Year, y = mean_val, group = Division, color = Division)) + geom_line() + labs(x = "Year", y = "Mean Enrollment Value", title = "Main Enrollment Value Across the Years for Each Division")
-
-#}
 ```
 
 #### Test the plot state function
 
 ```{r}
-# plot(_class_state_df_here_, var_name = "Enrollment Value")
+plot.state(df[[2]])
 ```
 
 #### Write the plot county function
 
 ```{r}
-
+plot.county <- function(df, state = "AL", order = "top", number = 5, value = "Enrollment Value") {
+  df_updated <- df |>
+    filter(State == state) |>
+    group_by(area_name) |>
+    summarize(county_mean_stat = mean(get(value)))
+   if(order == "top") {
+    df_updated <- df_updated |> arrange(desc(county_mean_stat))
+  } else if(order == "bottom") {
+    df_updated <- df_updated |> arrange(county_mean_stat)
+  } else {
+    return("Invalid order value")
+  }
+  df_updated <- df_updated |> slice(1:number)
+  df_plot <- left_join(df_updated, df, by = "area_name")
+  ggplot(df_plot, aes(x = Year, y = get(value), color = area_name)) +
+    geom_line()
+}
 ```
 
 #### Test the plot county function
 
 ```{r}
-# plot(_class_state_df_here_, var_name = "Enrollment Value")
+plot.county(df[[1]])
 ```
 
 ## Put It All Together
