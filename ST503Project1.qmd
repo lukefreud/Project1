@@ -150,7 +150,7 @@ survey_function <- function(long_data) {
 long_data_updated <- survey_function(long_data2)
 ```
 
-#### 3. Function for Creating State Variable (Step 5)
+#### 3. Function for creating a state variable (Step 5)
 
 ```{r}
 state_function <- function(county_tibble){
@@ -297,31 +297,39 @@ plot.county(df[[1]])
 #### Run the data processing function on the 2 enrollment URLs
 
 ```{r}
+# Run the function on enrollment URL 1
+enroll1 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/EDU01a.csv")
 
+# Run the function on enrollment URL 2
+enroll2 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/EDU01b.csv")
 ```
 
 #### Run the data combining function to make one object
 
 ```{r}
-
+enroll_combo <- combine_tibbles(enroll1, enroll2)
 ```
 
 #### Use the plot function on the state data frame
 
 ```{r}
-
+#plot.state(noncounty_tibble, "Enrollment Value")
 ```
 
 #### Use the plot function on the county data frame
 
 ```{r}
 # Specify the state to "NC", the group to top, and the number to 20
+#plot.county(df, state = "NC", order = "top", number = 20)
 
 # Specify the state to "SC", the group to bottom, and the number to 7
+#plot.county(df, state = "SC", order = "bottom", number = 7)
 
 # Do not specify anything
+plot.county(df[[1]])
 
 # Specify the state to "PA", the group to top, and the number to 8
+#plot.county(df, state = "PA", order = "top", number = 8)
 
 ```
 
