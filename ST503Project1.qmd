@@ -298,10 +298,10 @@ plot.county(df[[1]])
 
 ```{r}
 # Run the function on enrollment URL 1
-enroll1 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/EDU01a.csv", value = "Enrollment_Data_1")
+enroll1 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/EDU01a.csv", value = "Enrollment Value")
 
 # Run the function on enrollment URL 2
-enroll2 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/EDU01b.csv", value = "Enrollment_Data_2")
+enroll2 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/EDU01b.csv", value = "Enrollment Value")
 ```
 
 #### Run the data combining function to make one object
