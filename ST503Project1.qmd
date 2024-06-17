@@ -89,15 +89,15 @@ county_tibble |>
 
 ```{r}
 noncounty_tibble |>
-  mutate(Division = ifelse(area_name %in% c("CONNECTICUT", "MAINE", "MASSACHUSETTS", "NEW HAMPSHIRE", "RHODE ISLAND", "VERMONT"), "Division 1",
-                           ifelse(area_name %in% c("NEW JERSEY", "NEW YORK", "PENNSYLVANIA"), "Division 2",
-                                  ifelse(area_name %in% c("ILLINOIS", "INDIANA", "MICHIGAN", "OHIO", "WISCONSIN"), "Division 3",
-                                         ifelse(area_name %in% c("IOWA", "KANSAS", "MINNESOTA", "MISSOURI", "NEBRASKA", "NORTH DAKOTA", "SOUTH DAKOTA"), "Division 4",
-                                                ifelse(area_name %in% c("DELAWARE", "FLORIDA", "GEORGIA", "MARYLAND", "NORTH CAROLINA", "SOUTH CAROLINA", "VIRGINIA", "DISTRICT OF COLUMBIA", "District of Columbia", "WEST VIRGINIA"), "Division 5",
-                                                       ifelse(area_name %in% c("ALABAMA", "KENTUCKY", "MISSISSIPPI", "TENNESSEE"), "Division 6",
-                                                              ifelse(area_name %in% c("ARKANSAS", "LOUISIANA", "OKLAHOMA", "TEXAS"), "Division 7",
-                                                                     ifelse(area_name %in% c("ARIZONA", "COLORADO", "IDAHO", "MONTANA", "NEVADA", "NEW MEXICO", "UTAH", "WYOMING"), "Division 8",
-                                                                            ifelse(area_name %in% c("ALASKA", "CALIFORNIA", "HAWAII", "OREGON", "WASHINGTON"), "Division 9", "ERROR"))))))))))
+  mutate(Division = ifelse(area_name %in% c("CONNECTICUT", "MAINE", "MASSACHUSETTS", "NEW HAMPSHIRE", "RHODE ISLAND", "VERMONT"), "Division 1 (New England)",
+                           ifelse(area_name %in% c("NEW JERSEY", "NEW YORK", "PENNSYLVANIA"), "Division 2 (Middle Atlantic)",
+                                  ifelse(area_name %in% c("ILLINOIS", "INDIANA", "MICHIGAN", "OHIO", "WISCONSIN"), "Division 3 (East North Central)",
+                                         ifelse(area_name %in% c("IOWA", "KANSAS", "MINNESOTA", "MISSOURI", "NEBRASKA", "NORTH DAKOTA", "SOUTH DAKOTA"), "Division 4 (West North Central)",
+                                                ifelse(area_name %in% c("DELAWARE", "FLORIDA", "GEORGIA", "MARYLAND", "NORTH CAROLINA", "SOUTH CAROLINA", "VIRGINIA", "DISTRICT OF COLUMBIA", "District of Columbia", "WEST VIRGINIA"), "Division 5 (South Atlantic)",
+                                                       ifelse(area_name %in% c("ALABAMA", "KENTUCKY", "MISSISSIPPI", "TENNESSEE"), "Division 6 (East South Central)",
+                                                              ifelse(area_name %in% c("ARKANSAS", "LOUISIANA", "OKLAHOMA", "TEXAS"), "Division 7 (West South Central)",
+                                                                     ifelse(area_name %in% c("ARIZONA", "COLORADO", "IDAHO", "MONTANA", "NEVADA", "NEW MEXICO", "UTAH", "WYOMING"), "Division 8 (Mountain)",
+                                                                            ifelse(area_name %in% c("ALASKA", "CALIFORNIA", "HAWAII", "OREGON", "WASHINGTON"), "Division 9 (Pacific)", "ERROR"))))))))))
 ```
 
 ## Function Creation
@@ -170,15 +170,15 @@ state_function <- function(county_tibble){
 ```{r}
 division_function <- function(noncounty_tibble) {
   noncounty_tibble_updated <- noncounty_tibble |>
-  mutate(Division = ifelse(area_name %in% c("CONNECTICUT", "MAINE", "MASSACHUSETTS", "NEW HAMPSHIRE", "RHODE ISLAND", "VERMONT"), "Division 1",
-                           ifelse(area_name %in% c("NEW JERSEY", "NEW YORK", "PENNSYLVANIA"), "Division 2",
-                                  ifelse(area_name %in% c("ILLINOIS", "INDIANA", "MICHIGAN", "OHIO", "WISCONSIN"), "Division 3",
-                                         ifelse(area_name %in% c("IOWA", "KANSAS", "MINNESOTA", "MISSOURI", "NEBRASKA", "NORTH DAKOTA", "SOUTH DAKOTA"), "Division 4",
-                                                ifelse(area_name %in% c("DELAWARE", "FLORIDA", "GEORGIA", "MARYLAND", "NORTH CAROLINA", "SOUTH CAROLINA", "VIRGINIA", "DISTRICT OF COLUMBIA", "District of Columbia", "WEST VIRGINIA"), "Division 5",
-                                                       ifelse(area_name %in% c("ALABAMA", "KENTUCKY", "MISSISSIPPI", "TENNESSEE"), "Division 6",
-                                                              ifelse(area_name %in% c("ARKANSAS", "LOUISIANA", "OKLAHOMA", "TEXAS"), "Division 7",
-                                                                     ifelse(area_name %in% c("ARIZONA", "COLORADO", "IDAHO", "MONTANA", "NEVADA", "NEW MEXICO", "UTAH", "WYOMING"), "Division 8",
-                                                                            ifelse(area_name %in% c("ALASKA", "CALIFORNIA", "HAWAII", "OREGON", "WASHINGTON"), "Division 9", "ERROR"))))))))))
+  mutate(Division = ifelse(area_name %in% c("CONNECTICUT", "MAINE", "MASSACHUSETTS", "NEW HAMPSHIRE", "RHODE ISLAND", "VERMONT"), "Division 1 (New England)",
+                           ifelse(area_name %in% c("NEW JERSEY", "NEW YORK", "PENNSYLVANIA"), "Division 2 (Middle Atlantic)",
+                                  ifelse(area_name %in% c("ILLINOIS", "INDIANA", "MICHIGAN", "OHIO", "WISCONSIN"), "Division 3 (East North Central)",
+                                         ifelse(area_name %in% c("IOWA", "KANSAS", "MINNESOTA", "MISSOURI", "NEBRASKA", "NORTH DAKOTA", "SOUTH DAKOTA"), "Division 4 (West North Central)",
+                                                ifelse(area_name %in% c("DELAWARE", "FLORIDA", "GEORGIA", "MARYLAND", "NORTH CAROLINA", "SOUTH CAROLINA", "VIRGINIA", "DISTRICT OF COLUMBIA", "District of Columbia", "WEST VIRGINIA"), "Division 5 (South Atlantic)",
+                                                       ifelse(area_name %in% c("ALABAMA", "KENTUCKY", "MISSISSIPPI", "TENNESSEE"), "Division 6 (East South Central)",
+                                                              ifelse(area_name %in% c("ARKANSAS", "LOUISIANA", "OKLAHOMA", "TEXAS"), "Division 7 (West South Central)",
+                                                                     ifelse(area_name %in% c("ARIZONA", "COLORADO", "IDAHO", "MONTANA", "NEVADA", "NEW MEXICO", "UTAH", "WYOMING"), "Division 8 (Mountain)",
+                                                                            ifelse(area_name %in% c("ALASKA", "CALIFORNIA", "HAWAII", "OREGON", "WASHINGTON"), "Division 9 (Pacific)", "ERROR"))))))))))
   return(noncounty_tibble_updated)
 }
 ```
@@ -254,7 +254,7 @@ plot.state <- function(df, value = "Enrollment Value") {
     group_by(Division, Year) |>
     summarize(mean_stat = mean(get(value)))
   g <- ggplot(updated_df, aes(x = Year, y = mean_stat, color = Division)) 
-    g + geom_line()
+    g + geom_line() + labs(y = paste("Mean", value)) + ggtitle(paste("Changes in", value, "Over Years"))
 }
 ```
 
@@ -282,7 +282,9 @@ plot.county <- function(df, state = "AL", order = "top", number = 5, value = "En
   df_updated <- df_updated |> slice(1:number)
   df_plot <- left_join(df_updated, df, by = "area_name")
   ggplot(df_plot, aes(x = Year, y = get(value), color = area_name)) +
-    geom_line()
+    geom_line() +
+    labs(y = paste(value)) +
+    ggtitle(paste("Change in", value, "Over Time"))
 }
 ```
 
