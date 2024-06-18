@@ -6,6 +6,8 @@ editor: visual
 
 ## Data Processing
 
+We will first load necessary packages and read in the data from the URL.
+
 ```{r}
 # Load packages
 library(tidyverse)
@@ -20,8 +22,10 @@ data1 <- read_csv("https://www4.stat.ncsu.edu/~online/datasets/EDU01a.csv")
 
 #### 1. Only select the columns identified in the instructional document
 
+We will select the area name, STCOU, and other columns that end with a "D". we will also rename the Area_name variable.
+
 ```{r}
-# Name the data frame
+# Name the tibble
 selected_data1 <- data1 |>
 
 # Select the respective columns
@@ -29,15 +33,21 @@ selected_data1 <- data1 |>
 
 # Rename the Area_name variable
   rename(area_name = Area_name)
+selected_data1
 ```
 
 #### 2. Convert the data into long format
 
+We will now convert our dataset into a long format instead of the wide format.
+
 ```{r}
 long_data1 <- pivot_longer(selected_data1, cols = ends_with("D"), names_to = "Survey", values_to = "Enrollment Value")
+long_data1
 ```
 
 #### 3. Survey values
+
+Next, we will extract the measurement and year from the survey variable and add these as columns to our dataset.
 
 ```{r}
 long_data1_updated <- long_data1 |>
@@ -54,6 +64,8 @@ long_data1_updated
 ```
 
 #### 4. Create two data sets
+
+We will now create two datasets. One will have state data and the other will have county data in it.
 
 **Data set that contains only non-county data**
 
@@ -80,12 +92,16 @@ class(county_tibble) <- c("county", class(county_tibble))
 
 #### 5. Create a new variable to describe the corresponding state in the county tibble
 
+Here, we will create a State variable in the county dataset using the area_name variable we have.
+
 ```{r}
 county_tibble |>
   mutate(State = substr(area_name, start = nchar(area_name)-1, stop = nchar(area_name)))
 ```
 
 #### 6. Create a new 'division' variable for the non-county tibble
+
+We will now create a variable corresponding to the division of each state within the state tibble. There are 9 different divisions.
 
 ```{r}
 noncounty_tibble |>
@@ -102,7 +118,11 @@ noncounty_tibble |>
 
 ## Function Creation
 
-#### 1. Function to select necessary columns and convert the data into long format (Steps 1 and 2)
+In this section we will create functions to automate parts of what we did in the data processing steps.
+
+#### Function to select necessary columns and convert the data into long format (Steps 1 and 2)
+
+This function does steps 1 and 2 from the processing data section of this report. It selects necessary columns and makes the data into a long format.
 
 ```{r}
 long_format_conversion <- function(df, value = "Enrollment Value") {
@@ -120,14 +140,9 @@ long_format_conversion <- function(df, value = "Enrollment Value") {
 }
 ```
 
-```{r}
-# Function one test
-df <- read_csv("https://www4.stat.ncsu.edu/~online/datasets/EDU01b.csv")
-long_data2 <- long_format_conversion(df)
-long_data2
-```
+#### Function for pulling out year and measurement from the survey values (Step 3)
 
-#### 2. Function for pulling out year and measurement from the survey values (Step 3)
+This function does step 3 of the data processing section by adding the year and measurement variables to the dataset.
 
 ```{r}
 survey_function <- function(long_data) {
@@ -145,12 +160,9 @@ survey_function <- function(long_data) {
 }
 ```
 
-```{r}
-# Function two test
-long_data_updated <- survey_function(long_data2)
-```
+#### Function for creating a state variable (Step 5)
 
-#### 3. Function for creating a state variable (Step 5)
+This function does step 5 from the previous section by adding the state variable to the county tibble. It will be used within a later function where we will split datasets into county and state data.
 
 ```{r}
 state_function <- function(county_tibble){
@@ -160,12 +172,9 @@ state_function <- function(county_tibble){
 }
 ```
 
-```{r}
-# Function 3 Test
-# state_function(county_tibble)
-```
+#### Function for creating the division variable of the state tibble (Step 6)
 
-#### 4. Function for creating the division variable of the state (Step 6)
+This function creates the division variable within the state tibble. It will also be used in the next function we create.
 
 ```{r}
 division_function <- function(noncounty_tibble) {
@@ -183,11 +192,9 @@ division_function <- function(noncounty_tibble) {
 }
 ```
 
-```{r}
-#division_function(noncounty_tibble)
-```
+#### Function for creating two datasets from one and adding division/state variables (Steps 4-6)
 
-#### 5. Function for creating two datasets from one and adding division/state variables (Steps 4-6)
+This function does step 4-6 of the data processing phase. It splits the main dataset into a state tibble and a county tibble. Next, it calls both of the previous functions written within each respective dataset to add the necessary variables.
 
 ```{r}
 create_datasets <- function(long_data) {
@@ -202,13 +209,9 @@ create_datasets <- function(long_data) {
 }
 ```
 
-```{r}
-create_datasets(long_data_updated)
-```
-
-## Call It and Combine Your Data
-
 #### Create a wrapper function
+
+This wrapper function takes all of the functions we made previously and combines them into one. It will allow us to perform all of the functions simultaneously given the URL to a dataset.
 
 ```{r}
 my_wrapper <- function(url, value = "Enrollment Value"){
@@ -222,12 +225,16 @@ return(result)
 
 #### Call the wrapper function on each URL
 
+Here we will call this wrapper function on the two different URL's we were given.
+
 ```{r}
 tibble1 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/EDU01a.csv")
 tibble2 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/EDU01b.csv")
 ```
 
 #### Write a function to combine data sets
+
+This function will combine two different county datasets with each other and combine different state datasets with each other. It will return a list with two items: the combined state data frame and the combined county data frame.
 
 ```{r}
 combine_tibbles <- function (tibble1, tibble2){
@@ -239,13 +246,15 @@ combine_tibbles <- function (tibble1, tibble2){
 
 #### Call the combine function on the tibbles
 
+Here we will combine the two tibbles generated from the wrapper functions.
+
 ```{r}
 df <- combine_tibbles(tibble1, tibble2)
 ```
 
-## Writing a Generic Function for Summarizing
-
 #### Write the plot state function
+
+This function will create a new plot for the state data frame that will group by the division, create a mean for whatever value is given, and then plot the year vs. value what is given.
 
 ```{r}
 plot.state <- function(df, value = "Enrollment Value") {
@@ -258,13 +267,9 @@ plot.state <- function(df, value = "Enrollment Value") {
 }
 ```
 
-#### Test the plot state function
-
-```{r}
-plot.state(df[[2]])
-```
-
 #### Write the plot county function
+
+This function will create a new plot for the county dataset and is very flexible. You can input different states, number of observations, and order of sorting. The final plot will look at the change in whatever value is specified over time.
 
 ```{r}
 plot.county <- function(df, state = "AL", order = "top", number = 5, value = "Enrollment Value") {
@@ -288,15 +293,13 @@ plot.county <- function(df, state = "AL", order = "top", number = 5, value = "En
 }
 ```
 
-#### Test the plot county function
-
-```{r}
-plot.county(df[[1]])
-```
-
 ## Put It All Together
 
+In this section, we will run our functions we made on different URL's in order to take the raw data, put it in the correct format, and then display plots for different states, divisions, and number of observations.
+
 #### Run the data processing function on the 2 enrollment URLs
+
+Here we will process the data from the first 2 enrollment URL's given.
 
 ```{r}
 # Run the function on enrollment URL 1
@@ -308,17 +311,23 @@ enroll2 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/EDU01b.csv", 
 
 #### Run the data combining function to make one object
 
+This will combine the state data frame with the other state data frame, and the county data frame with the other county data frame.
+
 ```{r}
 enroll_combo <- combine_tibbles(enroll1, enroll2)
 ```
 
 #### Use the plot function on the state data frame
 
+Here we will plot the state data frame for the combined data using our plot.state function.
+
 ```{r}
 plot.state(enroll_combo[[2]])
 ```
 
 #### Use the plot function on the county data frame
+
+We will now plot the county data and give it 4 different inputs to see the flexibility of our plot.county function that we created.
 
 ```{r}
 # Specify the state to "NC", the group to top, and the number to 20
@@ -339,6 +348,8 @@ plot.county(enroll_combo[[1]], state = "PA", order = "top", number = 8)
 
 **Run the data processing function**
 
+In this step we will read in 4 more URL's to obtain different datasets and we will test our wrapper function on these.
+
 ```{r}
 url1 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/PST01a.csv")
 
@@ -350,6 +361,8 @@ url4 <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/PST01d.csv")
 ```
 
 **Run the data combining function to put these data sets into one object**
+
+We now will combine the data of 4 URL's that we read in and put it into one larger object. We will use the combine_tibbles function for this.
 
 ```{r}
 # Combine URLs 1 and 2
@@ -364,11 +377,15 @@ url_combo <- combine_tibbles(combo1, combo2)
 
 **Use the plot function on the state data frame**
 
+We will now test out the plot.state function on the new state data frame of the combined data.
+
 ```{r}
 plot.state(url_combo[[2]])
 ```
 
 **Use the plot function on the county data frame**
+
+We will now test the plot.county function with different inputs on our combined county data frame.
 
 ```{r}
 # Specify the state to "CA", the group to top, and the number to 15
