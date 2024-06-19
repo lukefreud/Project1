@@ -1,10 +1,11 @@
 ---
 title: "ST 558 Project 1"
+author: "Luke Freudenheim and Natalie Root"
+date: 6/18/2024
+description: In this project we will write functions to manipulate data sets that are given to us in a certain form. The final goal is to generate plots that display how enrollment in certain counties varies throughout different years.
 format: html
 editor: visual
 ---
-
-# Luke Freudenheim and Natalie Root (Group M)
 
 ## Data Processing
 
@@ -15,6 +16,7 @@ We will first load necessary packages and read in the data from the URL.
 library(tidyverse)
 library(readxl)
 library(DBI)
+library(scales)
 ```
 
 ```{r}
@@ -107,6 +109,8 @@ We will now create a variable corresponding to the division of each state within
 
 ```{r}
 noncounty_tibble |>
+  # Filtering out the duplicated entry
+  filter(area_name != "District of Columbia") |>
   mutate(Division = ifelse(area_name %in% c("CONNECTICUT", "MAINE", "MASSACHUSETTS", "NEW HAMPSHIRE", "RHODE ISLAND", "VERMONT"), "Division 1 (New England)",
                            ifelse(area_name %in% c("NEW JERSEY", "NEW YORK", "PENNSYLVANIA"), "Division 2 (Middle Atlantic)",
                                   ifelse(area_name %in% c("ILLINOIS", "INDIANA", "MICHIGAN", "OHIO", "WISCONSIN"), "Division 3 (East North Central)",
@@ -181,6 +185,7 @@ This function creates the division variable within the state tibble. It will als
 ```{r}
 division_function <- function(noncounty_tibble) {
   noncounty_tibble_updated <- noncounty_tibble |>
+    filter(area_name != "District of Columbia") |>
   mutate(Division = ifelse(area_name %in% c("CONNECTICUT", "MAINE", "MASSACHUSETTS", "NEW HAMPSHIRE", "RHODE ISLAND", "VERMONT"), "Division 1 (New England)",
                            ifelse(area_name %in% c("NEW JERSEY", "NEW YORK", "PENNSYLVANIA"), "Division 2 (Middle Atlantic)",
                                   ifelse(area_name %in% c("ILLINOIS", "INDIANA", "MICHIGAN", "OHIO", "WISCONSIN"), "Division 3 (East North Central)",
@@ -265,7 +270,7 @@ plot.state <- function(df, value = "Enrollment Value") {
     group_by(Division, Year) |>
     summarize(mean_stat = mean(get(value)))
   g <- ggplot(updated_df, aes(x = Year, y = mean_stat, color = Division)) 
-    g + geom_line() + labs(y = paste("Mean", value)) + ggtitle(paste("Changes in", value, "Over Years"))
+    g + geom_line() + labs(y = paste("Mean", value)) + ggtitle(paste("Changes in", value, "Over Years")) + scale_y_continuous(labels = label_comma())
 }
 ```
 
@@ -291,7 +296,8 @@ plot.county <- function(df, state = "AL", order = "top", number = 5, value = "En
   ggplot(df_plot, aes(x = Year, y = get(value), color = area_name)) +
     geom_line() +
     labs(y = paste(value)) +
-    ggtitle(paste("Change in", value, "Over Time"))
+    ggtitle(paste("Change in", value, "Over Time")) +
+    scale_y_continuous(labels = label_comma())
 }
 ```
 
@@ -317,6 +323,7 @@ This will combine the state data frame with the other state data frame, and the 
 
 ```{r}
 enroll_combo <- combine_tibbles(enroll1, enroll2)
+enroll_combo
 ```
 
 #### Use the plot function on the state data frame
@@ -375,6 +382,8 @@ combo2 <- combine_tibbles(url3, url4)
 
 # Combine all 4 URLs
 url_combo <- combine_tibbles(combo1, combo2)
+
+url_combo
 ```
 
 **Use the plot function on the state data frame**
