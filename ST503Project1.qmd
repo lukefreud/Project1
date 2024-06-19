@@ -323,7 +323,6 @@ This will combine the state data frame with the other state data frame, and the 
 
 ```{r}
 enroll_combo <- combine_tibbles(enroll1, enroll2)
-enroll_combo
 ```
 
 #### Use the plot function on the state data frame
@@ -382,8 +381,6 @@ combo2 <- combine_tibbles(url3, url4)
 
 # Combine all 4 URLs
 url_combo <- combine_tibbles(combo1, combo2)
-
-url_combo
 ```
 
 **Use the plot function on the state data frame**
